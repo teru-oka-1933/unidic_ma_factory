@@ -6,13 +6,14 @@ import codecs
 import os
 import shutil
 import subprocess
-import sys
 
-import remove_deep_unk_from_lex
 import ph4_a_train_dic as train_dic
 
 import remove_shallow_unk_from_lex
+import remove_deep_unk_from_lex
+import remove_middle_unk_from_lex
 
+import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -46,6 +47,12 @@ def main(mecab_exe, subcommand_dir, java_path, java_cp, src_seed_dir, eval_work_
     shallow_seed_dir = os.path.join(shallow_unk_work_dir, 'seed')
     print u''
 
+    middle_unk_work_dir = os.path.join(eval_work_dir, 'middle_unk')
+    print u'make', middle_unk_work_dir
+    os.mkdir(middle_unk_work_dir)
+    middle_seed_dir = os.path.join(middle_unk_work_dir, 'seed')
+    print u''
+
     deep_unk_work_dir = os.path.join(eval_work_dir, 'deep_unk')
     print u'make', deep_unk_work_dir
     os.mkdir(deep_unk_work_dir)
@@ -60,11 +67,16 @@ def main(mecab_exe, subcommand_dir, java_path, java_cp, src_seed_dir, eval_work_
     shutil.copy(src_lex_file, eval_work_dir)
     all_lex_file = os.path.join(eval_work_dir, os.path.basename(src_lex_file))
     shallow_unk_lex_file = os.path.join(eval_work_dir, 'shallow_unk_lex.csv')
+    middle_unk_lex_file = os.path.join(eval_work_dir, 'middle_unk_lex.csv')
     deep_unk_lex_file = os.path.join(eval_work_dir, 'deep_unk_lex.csv')
     print u''
     print u'remove_shallow_unk_from_lex.py'
     remove_shallow_unk_from_lex.main(train_corpus_file, test_corpus_file, all_lex_file, shallow_unk_lex_file,
                                      os.path.join(src_seed_dir, 'dicrc'))
+    print u''
+    print u'remove_middle_unk_from_lex.py'
+    remove_middle_unk_from_lex.main(train_corpus_file, test_corpus_file, all_lex_file, middle_unk_lex_file,
+                                  os.path.join(src_seed_dir, 'dicrc'), lid_field_num)
     print u''
     print u'remove_deep_unk_from_lex.py'
     remove_deep_unk_from_lex.main(train_corpus_file, test_corpus_file, all_lex_file, deep_unk_lex_file,
@@ -88,6 +100,13 @@ def main(mecab_exe, subcommand_dir, java_path, java_cp, src_seed_dir, eval_work_
                    output_model_name,
                    init_model_file=init_model_file, c=c, p=p, f=f)
 
+    print u'======== TRAIN MIDDLE UNK ========='
+    middle_final_dir = os.path.join(middle_unk_work_dir, 'final')
+    train_dic.main(subcommand_dir, src_seed_dir, middle_seed_dir, middle_final_dir,
+                   train_corpus_file, middle_unk_lex_file,
+                   output_model_name,
+                   init_model_file=init_model_file, c=c, p=p, f=f)
+
     print u'======== TRAIN DEEP UNK ========='
     deep_final_dir = os.path.join(deep_unk_work_dir, 'final')
     train_dic.main(subcommand_dir, src_seed_dir, deep_seed_dir, deep_final_dir,
@@ -99,7 +118,7 @@ def main(mecab_exe, subcommand_dir, java_path, java_cp, src_seed_dir, eval_work_
     # mecab実行
     ###############################################
     print u'======== Eval ========='
-    for work_dir in [all_lex_work_dir, shallow_unk_work_dir, deep_unk_work_dir]:
+    for work_dir in [all_lex_work_dir, shallow_unk_work_dir, middle_unk_work_dir, deep_unk_work_dir]:
         print work_dir
         # 平文化
         flat_text = os.path.join(work_dir, 'flat_test.txt')
