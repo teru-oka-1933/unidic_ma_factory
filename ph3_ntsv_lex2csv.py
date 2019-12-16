@@ -65,6 +65,10 @@ def main(input_file, rewrite_def, output_file):
                                 field_map[u'pos'+unicode(i+1)] = val
                         else:
                             field_map[f_name] = f_val
+                    # デフレスパイラル削除
+                    if field_map[u'orth'] in [u'デフレスパイラル', u'インフレリスク', u'アルミサッシ',
+                                              u'アルミホイル', u'アルミパネル', u'アルミチューブ']:
+                        continue
                     # rewriteの列順に従って出力
                     output_line = []
                     for num in sorted(rewrite_map.keys()):
@@ -77,8 +81,8 @@ def main(input_file, rewrite_def, output_file):
                     output_line = csv_joinner([field_map[u'orth'], u'0', u'0', u'0'] + output_line)
                     lemma_id = unicode(long(field_map[u'lid']) >> 38)
                     output_line += u',%s,%s\n' % (field_map[u'lid'], lemma_id)
-		    if not output_line.startswith(u','):
-			fout.write(output_line)
+                    if not output_line.startswith(u','):
+                        fout.write(output_line)
 
 
 if __name__ == '__main__':

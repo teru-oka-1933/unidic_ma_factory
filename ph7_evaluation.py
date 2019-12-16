@@ -7,7 +7,7 @@ import os
 import shutil
 import subprocess
 
-import ph4_a_train_dic as train_dic
+import ph4_train_dic as train_dic
 
 import remove_shallow_unk_from_lex
 import remove_deep_unk_from_lex
