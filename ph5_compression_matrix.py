@@ -21,7 +21,7 @@ if __name__ == '__main__':
     argc = len(argvs)
     if argc != 2:
         print u''
-        print u'python compression_matrix_def work_final_dir'
+        print u'python ph5_compression_matrix.py work_final_dir'
         print u''
         sys.exit(0)
 
