@@ -171,7 +171,7 @@ if __name__ == '__main__':
     for list_of_tuple_of_new_right_id_and_cost in left_compressed_matrix:
         for left_id in left_compressed_matrix[list_of_tuple_of_new_right_id_and_cost]:
             new_left_id_map[left_id] = new_left_id
-            new_left_id += 1
+        new_left_id += 1
     print u'Done!'
 
     # 圧縮したテーブルを作成
